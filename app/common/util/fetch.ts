@@ -9,12 +9,13 @@ export const getHeaders = async () => {
     };
 };
 
-export const post = async (path: string, formData: FormData) => {
+export const post = async (path: string, data: FormData | object) => {
+    const body = data instanceof FormData ? Object.fromEntries(data) : data;
     const headers = await getHeaders();
     const res = await fetch(`${API_URL}/${path}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...headers },
-        body: JSON.stringify(Object.fromEntries(formData)),
+        body: JSON.stringify(body),
     });
     const parseRes = await res.json();
     if (!res.ok) {
@@ -24,9 +25,14 @@ export const post = async (path: string, formData: FormData) => {
     return { error: "", data: parseRes };
 };
 
-export const get = async <T>(path: string, tags?: string[]) => {
+export const get = async <T>(
+    path: string, 
+    tags?: string[], 
+    params?: URLSearchParams
+) => {
+    const url = params ? `${API_URL}/${path}?` + params : `${API_URL}/${path}`;
     const headers = await getHeaders();
-    const res = await fetch(`${API_URL}/${path}`, {
+    const res = await fetch(url, {
         headers: { ...headers },
         next: { tags },
     });

@@ -2,6 +2,7 @@ import { Grid, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 import { API_URL } from "@/app/common/constants/api";
 import getProduct from "./get-product";
+import Checkout from "@/app/checkout/checkout";
 
 interface SingleProductProps {
   params: {
@@ -19,7 +20,8 @@ interface Product {
 }
 
 export default async function SingleProduct({ params }: SingleProductProps) {
-  const product: Product = await getProduct(+params.productId);
+  const { productId } = await Promise.resolve(params);
+  const product: Product = await getProduct(+productId);
 
   return (
     <Grid
@@ -52,6 +54,7 @@ export default async function SingleProduct({ params }: SingleProductProps) {
             <Typography variant="h4" color="primary">
                 ${product.price.toFixed(2)} 
             </Typography>
+            <Checkout productId={product.id} />
             </Stack>
         </Grid>
     </Grid>
